@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", function(){
 /**
  * Start the game
  * 
- * 
  */
 function startGame() {
 
@@ -30,5 +29,15 @@ function startGame() {
 function draw() {
 
 
+
+}
+
+/** 
+ * Plays a card
+ * 
+*/
+function play() {
+
+    
 
 }
