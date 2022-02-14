@@ -1,128 +1,148 @@
+class Deck {
+    constructor() {
+    this.deck = [];
+    this.reset();
+    this.shuffle();
+  }
+  
+  
+  reset() {
+    this.deck = [];
+    const suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
+    const values = ['Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King'];
 
-var playerCards = [];
-var computerCards = [];
-var deck = new Deck();
-var discard = [];
-var currCard = new Card('none', 0, 0);
-
-document.addEventListener("DOMContentLoaded", function(){
-    document.getElementById('draw').addEventListener('click', () => {
-        draw();
-    });
-    document.getElementById('new-game').addEventListener('click', () => {
-        startGame();
-    });
-
-    startGame();
-});
-
-/**
- * Start the game
- * 
- */
-function startGame() {
-
-    while (true) {
-        if (deck[0].number != 8) {
-            currCard = deck[0];
-            break;
-        }
-        else
-            discard.push(deck.pop());
-
+    for (let suit in suits) {
+      for (let value in values) {
+        this.deck.push(values[value] + " of " + suits[suit]);
+      }
     }
-}
-
-/**
- * Draws a card
- */
-function draw() {
-
-
-
-}
-
-/** 
- * Plays a card
- * 
-*/
-function play() {
-
-
-
+  }
+  
+  
+  shuffle() {
+    let numCards = this.deck.length;  
+    for (var i=0; i<numCards; i++) {
+      let j = Math.floor(Math.random() * numCards);
+      let temp = this.deck[i];
+      this.deck[i] = this.deck[j];
+      this.deck[j] = temp;
+    }
+  }
+  
+  deal(){
+    return this.deck.pop();
+  } 
+  
+  isEmpty() {
+    return (this.deck.length==0);
+  }
+  
+  length() {
+    return this.deck.length;
+  }
+  
 }
 
 class Card {
-    constructor(suit, number, points) {
-      this.suit = suit;
-      this.number = number;
-      this.points = points;
+  constructor(card) {
+      this.card = card;
+      const cardValues = {"Ace of Hearts":1, "2 of Hearts":2, "3 of Hearts":3, 
+      "4 of Hearts":4, "5 of Hearts":5, "6 of Hearts":6, "7 of Hearts":7, 
+      "8 of Hearts":8, "9 of Hearts":9, "10 of Hearts":10, "Jack of Hearts":11, 
+      "Queen of Hearts":12, "King of Hearts":13, "Ace of Diamonds":1, "2 of Diamonds":2, 
+      "3 of Diamonds":3, "4 of Diamonds":4, "5 of Diamonds":5, "6 of Diamonds":6, 
+      "7 of Diamonds":7, "8 of Diamonds":8, "9 of Diamonds":9, "10 of Diamonds":10, 
+      "Jack of Diamonds":11, "Queen of Diamonds":12, "King of Diamonds":13, 
+      "Ace of Clubs":1, "2 of Clubs":2, "3 of Clubs":3, "4 of Clubs":4, "5 of Clubs":5, 
+      "6 of Clubs":6, "7 of Clubs":7, "8 of Clubs":8, "9 of Clubs":9, "10 of Clubs":10, 
+      "Jack of Clubs":11, "Queen of Clubs":12, "King of Clubs":13, "Ace of Spades":1, "2 of Spades":2, 
+      "3 of Spades":3, "4 of Spades":4, "5 of Spades":5, "6 of Spades":6, "7 of Spades":7, "8 of Spades":8, 
+      "9 of Spades":9, "10 of Spades":10, "Jack of Spades":11, "Queen of Spades":12, "King of Spades":13};
+    
+    this.value = cardValues[card];
+    this.suit = card.substring(card.indexOf(" of ")+4);
+    this.placeHolder = null;
+    this.flipped = false;
+  
+    var suits = {'Hearts':0, 'Diamonds':13, 'Clubs':26, 'Spades':39 }
+    this.pos = suits[this.suit] + this.value;
+  }
+  
+  displayCard(placeHolder,flipped=true) {
+    this.placeHolder = document.getElementById(placeHolder);
+    this.placeHolder.classList.add("card");
+    this.flipped=flipped;
+    if (flipped) {
+      this.placeHolder.style.backgroundPosition = -150*this.pos + "px";
+    } else {
+      this.placeHolder.style.backgroundPosition = "0px";  
+    }
+  }
+  
+  flip() {
+    if (this.flipped) {
+      this.placeHolder.style.backgroundPosition = "0px";
+      this.flipped=false;
+    } else {
+      this.placeHolder.style.backgroundPosition = -150*this.pos + "px";
+      this.flipped=true;  
+    }
+  }
+  
+} 
+const deck = new Deck();
+let card1,card2,card3,card4,card5,playerCard1,playerCard2;
+
+function deal() 
+{
+  if (deck.length()<7) 
+  {
+    deck.reset();
+    deck.shuffle();
+  }  
+  card1 = new Card(deck.deal());
+  card2 = new Card(deck.deal());
+  card3 = new Card(deck.deal());
+  card4 = new Card(deck.deal());
+  card5 = new Card(deck.deal());
+  playerCard1 = new Card(deck.deal());
+  playerCard2 = new Card(deck.deal());
+
+  
+  card1.displayCard("card1",false);  
+  card2.displayCard("card2",false);  
+  card3.displayCard("card3",false);  
+  card4.displayCard("card4",false);  
+  card5.displayCard("card5",false);  
+  playerCard1.displayCard("playerCard1",true);  
+  playerCard2.displayCard("playerCard2",true); 
+} 
+
+function nextStep(elle) 
+{
+  if (!card1.flipped) {
+    card1.flip();
+    card2.flip();
+    card3.flip();
+    elle.innerHTML="Reveal 4th card";
+  } else if(!card4.flipped) {
+    card4.flip();
+    elle.innerHTML="Reveal 5th card";
+} else if(!card5.flipped) {
+    card5.flip();
+    elle.innerHTML="New Round";
+} else {
+  deal();
+  elle.innerHTML="Reveal first 3 cards.";
+}
+}
+
+function check()
+{
+    if(card1==card2)
+    {
+        
     }
 }
 
-class Deck {
-    constructor() {
-        this.cards = [];
-        this.cards.push(new Card('spades', 1, 1));
-        this.cards.push(new Card('hearts', 1, 1));
-        this.cards.push(new Card('clubs', 1, 1));
-        this.cards.push(new Card('diamonds', 1, 1));
-        for (var i = 2; i<=7; i++) {
-
-            this.cards.push(new Card('spades', i, i));
-            this.cards.push(new Card('hearts', i, i));
-            this.cards.push(new Card('clubs', i, i));
-            this.cards.push(new Card('diamonds', i, i));
-        
-        }
-        this.cards.push(new Card('spades', 8, 50));
-        this.cards.push(new Card('hearts', 8, 50));
-        this.cards.push(new Card('clubs', 8, 50));
-        this.cards.push(new Card('diamonds', 8, 50));
-        this.cards.push(new Card('spades', 9, 9));
-        this.cards.push(new Card('hearts', 9, 9));
-        this.cards.push(new Card('clubs', 9, 9));
-        this.cards.push(new Card('diamonds', 9, 9));
-        this.cards.push(new Card('spades', 10, 10));
-        this.cards.push(new Card('hearts', 10, 10));
-        this.cards.push(new Card('clubs', 10, 10));
-        this.cards.push(new Card('diamonds', 10, 10));
-        this.cards.push(new Card('spades', 11, 10));
-        this.cards.push(new Card('hearts', 11, 10));
-        this.cards.push(new Card('clubs', 11, 10));
-        this.cards.push(new Card('diamonds', 11, 10));
-        this.cards.push(new Card('spades', 12, 10));
-        this.cards.push(new Card('hearts', 12, 10));
-        this.cards.push(new Card('clubs', 12, 10));
-        this.cards.push(new Card('diamonds', 12, 10));
-        this.cards.push(new Card('spades', 13, 10));
-        this.cards.push(new Card('hearts', 13, 10));
-        this.cards.push(new Card('clubs', 13, 10));
-        this.cards.push(new Card('diamonds', 13, 10));
-        
-        this.shuffle(this.cards);
-    }
-    
-    push(card) { this.cards.push(card); }
-
-    pop() { return this.cards.pop(); }
-
-    shuffle(array) {
-        let currentIndex = array.length,  randomIndex;
-      
-        // While there remain elements to shuffle...
-        while (currentIndex != 0) {
-      
-          // Pick a remaining element...
-          randomIndex = Math.floor(Math.random() * currentIndex);
-          currentIndex--;
-      
-          // And swap it with the current element.
-          [array[currentIndex], array[randomIndex]] = [
-            array[randomIndex], array[currentIndex]];
-        }
-      
-        return array;
-    }
-    
-}
+deal();
